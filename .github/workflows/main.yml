@@ -1,0 +1,36 @@
+name: Run FastAPI Application
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 * * * *'  # Chaque heure
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Utiliser l'environnement Ubuntu
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2  # Vérifie ton code depuis le dépôt
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Spécifie la version de Python
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Installe les dépendances de requirements.txt
+
+      - name: List files for debugging
+        run: ls -alh  # Liste les fichiers du répertoire pour vérifier la présence de main.py et requirements.txt
+
+      - name: Check Python version
+        run: python --version  # Vérifie la version de Python
+
+      - name: Run FastAPI app with Uvicorn
+        run: |
+          nohup uvicorn main:app --host 0.0.0.0 --port 8000 &  # Démarre le serveur en arrière-plan
+          sleep 10  # Attend que le serveur démarre (surtout utile pour des tests locaux)
